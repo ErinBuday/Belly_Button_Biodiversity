@@ -1,3 +1,5 @@
+let sampleUrl = "https://raw.githubusercontent.com/ErinBuday/Plot.ly_Challenge/main/data/samples.json"
+
 // Function for change on dropdown menu
 function optionChanged(selectedID){
 
@@ -5,7 +7,7 @@ function optionChanged(selectedID){
     console.log(selectedID);
  
     // Read the json file for the data
-    d3.json("data/samples.json").then((data) => {
+    d3.json(sampleUrl.then((data) => {
  
    //  console.log(data);
  
