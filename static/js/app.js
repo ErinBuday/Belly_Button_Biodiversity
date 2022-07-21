@@ -5,7 +5,7 @@ let sampleUrl = "https://raw.githubusercontent.com/ErinBuday/Plot.ly_Challenge/m
 // BONUS: Build the Gauge Chart
   
 function buildMetadata(sample) {
-  d3.json("samples.json").then((data) => {
+  d3.json("sampleUrl").then((data) => {
     var metadata= data.metadata;
     var resultsarray= metadata.filter(sampleobject => 
       sampleobject.id == sample);
@@ -28,7 +28,7 @@ function buildMetadata(sample) {
 function buildCharts(sample) {
 
 // Use `d3.json` to fetch the sample data for the plots
-d3.json("samples.json").then((data) => {
+d3.json("sampleUrl").then((data) => {
   var samples= data.samples;
   var resultsarray= samples.filter(sampleobject => 
       sampleobject.id == sample);
@@ -97,7 +97,7 @@ function init() {
 var selector = d3.select("#selDataset");
 
 // Use the list of sample names to populate the select options
-d3.json("samples.json").then((data) => {
+d3.json("sampleUrl").then((data) => {
   var sampleNames = data.names;
   sampleNames.forEach((sample) => {
     selector
