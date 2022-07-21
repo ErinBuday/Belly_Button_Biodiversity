@@ -1,7 +1,7 @@
 # Belly Button Biodiversity 
 
 ## Description
-The objective of this project is to build an interactive dashboard to explore the [Belly Button Diversity dataset] (http://robdunnlab.com/projects/belly-button-biodiversity/) which catalogs the microbes colonizing human navels. 
+The objective of this project is to build an interactive dashboard to explore the [Belly Button Diversity dataset](http://robdunnlab.com/projects/belly-button-biodiversity/) which catalogs the microbes colonizing human navels. 
 
 The dashboard includes:
 * dropdown to examine data from each individual
