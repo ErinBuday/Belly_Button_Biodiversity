@@ -9,7 +9,7 @@ The dashboard includes:
 * bubble chart featuring all microbial species
 * gauge of the frequency of belly button washes weekly for each individual
 
-<img width="808" alt="Screen Shot 2022-07-21 at 8 51 52 AM" src="https://user-images.githubusercontent.com/100361900/180218619-58f63d5f-9614-46c3-a28a-85b491d2edbf.png">
+<img width="808" alt="Screen Shot 2022-07-21 at 8 51 52 AM" src="https://user-images.githubusercontent.com/100361900/180220942-02413ab2-03b8-4111-ab95-50b46c6c251e.png">
 
 - - -
 
