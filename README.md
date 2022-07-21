@@ -17,9 +17,10 @@ The dashboard includes:
 * Plot.ly
 * Javascript
 * HTML
+* CSS
 * D3.js
 * JSON
-* GitHub and GitHub Pages
+* GitHub 
 * console.log
 - - -
 ## References
