@@ -1,4 +1,4 @@
-# Plot.ly Homework - Belly Button Biodiversity
+# Belly Button Biodiversity Dashboard
 
 !![pexels-photo-5841839](https://user-images.githubusercontent.com/100361900/180126916-f73ee2f2-2365-42f3-b1dc-2c02bb7b11a4.jpg)
 
