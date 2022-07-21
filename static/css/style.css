@@ -1,29 +1,18 @@
-* {
-    font-family: 'quicksand';
+.panel-default > .panel-heading-custom {
+    background: #D24E68; color: #fff;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: center;
 }
 
-.jumbo-bg {
-    background: url("https://images.unsplash.com/photo-1585057638670-98226d968ee5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1010&q=80") no-repeat center;
-    background-size: cover;
+.jumbotron {
+        background-image: url("https://media.istockphoto.com/photos/beneficial-healthy-intestinal-bacterium-micro-flora-picture-id1091692964?s=612x612");
+        background-size: 100%;
+    text-align: center;  
 }
 
-.demo-text {
-    font-size: 14px;
-}
-
-.card .card-header {
-    font-size: 15px;
-    font-weight: bold;
-}
-
-#selDataset {
-    font-size: 14px;
-}
-
-.belly-bg {
-    background-color: #225ea8 !important
-}
-
-.header-font {
-    font-family: 'Times New Roman', serif;
+.jumbotron > h1 {
+    text-shadow: 1px 1px 2px black;
 }

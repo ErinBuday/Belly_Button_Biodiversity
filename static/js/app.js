@@ -1,366 +1,168 @@
-// select the user input field
-var idSelect = d3.select("#selDataset");
 
-// select the demographic info div's ul list group
-var demographicsTable = d3.select("#sample-metadata");
 
-// select the bar chart div
-var barChart = d3.select("#bar");
+// SELECT FIELDS & DIVS
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// select the bubble chart div
-var bubbleChart = d3.select("bubble");
+// FUNCTION #1 of 4
+function buildCharts(patientID) {
 
-// select the gauge chart div
-var gaugeChart = d3.select("gauge");
+    // READ & INTERPRET THE DATA
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// create a function to initially populate dropdown menu with IDs and draw charts by default (using the first ID)
-function init() {
-
-    // reset any previous data
-    resetData();
-
-    // read in samples from JSON file
+    // Read in the JSON data
     d3.json("https://raw.githubusercontent.com/ErinBuday/Plot.ly_Challenge/main/data/samples.json").then((data => {
 
-        // ----------------------------------
-        // POPULATE DROPDOWN MENU WITH IDs 
-        // ----------------------------------
+        // Define samples
+        var samples = data.samples
+        var metadata = data.metadata
+        var filteredMetadata = metadata.filter(bacteriaInfo => bacteriaInfo.id == patientID)[0]
 
-        //  use a forEach to loop over each name in the array data.names to populate dropdowns with IDs
-        data.names.forEach((name => {
-            var option = idSelect.append("option");
-            option.text(name);
-        })); // close forEach
+        // Filter by patient ID
+        var filteredSample = samples.filter(bacteriaInfo => bacteriaInfo.id == patientID)[0]
 
-        // get the first ID from the list for initial charts as a default
-        var initId = idSelect.property("value")
+        // Create variables for chart
+        // Grab sample_values for the bar chart
+        var sample_values = filteredSample.sample_values
 
-        // plot charts with initial ID
-        plotCharts(initId);
+        // Use otu_ids as the labels for bar chart
+        var otu_ids = filteredSample.otu_ids
 
-    })); // close .then()
+        // use otu_labels as the hovertext for bar chart
+        var otu_labels = filteredSample.otu_labels
 
-} // close init() function
-
-// create a function to reset divs to prepare for new data
-function resetData() {
-
-    // ----------------------------------
-    // CLEAR THE DATA
-    // ----------------------------------
-
-    demographicsTable.html("");
-    barChart.html("");
-    bubbleChart.html("");
-    gaugeChart.html("");
-
-}; // close resetData()
-
-// create a function to read JSON and plot charts
-function plotCharts(id) {
-
-    // read in the JSON data
-    d3.json("https://raw.githubusercontent.com/ErinBuday/Plot.ly_Challenge/main/data/samples.json").then((data => {
-
-        // ----------------------------------
-        // POPULATE DEMOGRAPHICS TABLE
-        // ----------------------------------
-
-        // filter the metadata for the ID chosen
-        var individualMetadata = data.metadata.filter(participant => participant.id == id)[0];
-
-        // get the wash frequency for gauge chart later
-        var wfreq = individualMetadata.wfreq;
-
-        // Iterate through each key and value in the metadata
-        Object.entries(individualMetadata).forEach(([key, value]) => {
-
-            var newList = demographicsTable.append("ul");
-            newList.attr("class", "list-group list-group-flush");
-
-            // append a li item to the unordered list tag
-            var listItem = newList.append("li");
-
-            // change the class attributes of the list item for styling
-            listItem.attr("class", "list-group-item p-1 demo-text bg-transparent");
-
-            // add the key value pair from the metadata to the demographics list
-            listItem.text(`${key}: ${value}`);
-
-        }); // close forEach
-
-        // --------------------------------------------------
-        // RETRIEVE DATA FOR PLOTTING CHARTS
-        // --------------------------------------------------
-
-        // filter the samples for the ID chosen
-        var individualSample = data.samples.filter(sample => sample.id == id)[0];
-
-        // create empty arrays to store sample data
-        var otuIds = [];
-        var otuLabels = [];
-        var sampleValues = [];
-
-        // Iterate through each key and value in the sample to retrieve data for plotting
-        Object.entries(individualSample).forEach(([key, value]) => {
-
-            switch (key) {
-                case "otu_ids":
-                    otuIds.push(value);
-                    break;
-                case "sample_values":
-                    sampleValues.push(value);
-                    break;
-                case "otu_labels":
-                    otuLabels.push(value);
-                    break;
-                    // case
-                default:
-                    break;
-            } // close switch statement
-
-        }); // close forEach
-
-        // slice and reverse the arrays to get the top 10 values, labels and IDs
-        var topOtuIds = otuIds[0].slice(0, 10).reverse();
-        var topOtuLabels = otuLabels[0].slice(0, 10).reverse();
-        var topSampleValues = sampleValues[0].slice(0, 10).reverse();
-
-        // use the map function to store the IDs with "OTU" for labelling y-axis
-        var topOtuIdsFormatted = topOtuIds.map(otuID => "OTU " + otuID);
-
-        // ----------------------------------
-        // PLOT BAR CHART
-        // ----------------------------------
-
-        // create a trace
-        var traceBar = {
-            x: topSampleValues,
-            y: topOtuIdsFormatted,
-            text: topOtuLabels,
+        // BAR CHART
+        // Create the trace
+        var bar_data = [{
+            // Use otu_ids for the x values
+            x: sample_values.slice(0, 10).reverse(),
+            // Use sample_values for the y values
+            y: otu_ids.slice(0, 10).map(otu_id => `OTU ${otu_id}`).reverse(),
+            // Use otu_labels for the text values
+            text: otu_labels.slice(0, 10).reverse(),
             type: 'bar',
             orientation: 'h',
             marker: {
-                color: 'rgb(29,145,192)'
-            }
+                color: 'rgb(242, 113, 102)'
+            },
+        }]
+
+
+
+
+        // Define plot layout
+        var bar_layout = {
+            title: "Top 10 Microbial Species in Belly Buttons",
+            xaxis: { title: "Bacteria Sample Values" },
+            yaxis: { title: "OTU IDs" }
         };
 
-        // create the data array for plotting
-        var dataBar = [traceBar];
+        // Display plot
+        Plotly.newPlot('bar', bar_data, bar_layout)
 
-        // define the plot layout
-        var layoutBar = {
-            height: 500,
-            width: 600,
-            font: {
-                family: 'Quicksand'
-            },
-            hoverlabel: {
-                font: {
-                    family: 'Quicksand'
-                }
-            },
-            title: {
-                text: `<b>Top OTUs for Test Subject ${id}</b>`,
-                font: {
-                    size: 18,
-                    color: 'rgb(34,94,168)'
-                }
-            },
-            xaxis: {
-                title: "<b>Sample values<b>",
-                color: 'rgb(34,94,168)'
-            },
-            yaxis: {
-                tickfont: { size: 14 }
-            }
-        }
-
-
-        // plot the bar chart to the "bar" div
-        Plotly.newPlot("bar", dataBar, layoutBar);
-
-        // ----------------------------------
-        // PLOT BUBBLE CHART
-        // ----------------------------------
-
-        // create trace
-        var traceBub = {
-            x: otuIds[0],
-            y: sampleValues[0],
-            text: otuLabels[0],
+        // BUBBLE CHART
+        // Create the trace
+        var bubble_data = [{
+            // Use otu_ids for the x values
+            x: otu_ids,
+            // Use sample_values for the y values
+            y: sample_values,
+            // Use otu_labels for the text values
+            text: otu_labels,
             mode: 'markers',
             marker: {
-                size: sampleValues[0],
-                color: otuIds[0],
-                colorscale: 'YlGnBu'
+                // Use otu_ids for the marker colors
+                color: otu_ids,
+                // Use sample_values for the marker size
+                size: sample_values,
+                colorscale: 'YlOrRd'
             }
+        }];
+
+
+        // Define plot layout
+        var layout = {
+            title: "Belly Button Samples",
+            xaxis: { title: "OTU IDs" },
+            yaxis: { title: "Sample Values" }
         };
 
-        // create the data array for the plot
-        var dataBub = [traceBub];
+        // Display plot
+        Plotly.newPlot('bubble', bubble_data, layout)
 
-        // define the plot layout
-        var layoutBub = {
-            font: {
-                family: 'Quicksand'
-            },
-            hoverlabel: {
-                font: {
-                    family: 'Quicksand'
+        // GAUGE CHART
+        // Create variable for washing frequency
+        var washFreq = filteredMetadata.wfreq
+
+        // Create the trace
+        var gauge_data = [
+            {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: washFreq,
+                title: { text: "Washing Frequency (Times per Week)" },
+                type: "indicator",
+                mode: "gauge+number",
+                gauge: {
+                    bar: {color: 'white'},
+                    axis: { range: [null, 9] },
+                    steps: [
+                        { range: [0, 3], color: 'rgb(253, 162, 73)' },
+                        { range: [3, 6], color: 'rgb(242, 113, 102)' },
+                        { range: [6, 9], color: 'rgb(166, 77, 104)' },
+                    ],
+                    // threshold: {
+                    //     line: { color: "white" },
+                    // }
                 }
-            },
-            xaxis: {
-                title: "<b>OTU Id</b>",
-                color: 'rgb(34,94,168)'
-            },
-            yaxis: {
-                title: "<b>Sample Values</b>",
-                color: 'rgb(34,94,168)'
-            },
-            showlegend: false,
-        };
-
-        // plot the bubble chat to the appropriate div
-        Plotly.newPlot('bubble', dataBub, layoutBub);
-
-        // ----------------------------------
-        // PLOT GAUGE CHART (OPTIONAL)
-        // ----------------------------------
-
-        // if wfreq has a null value, make it zero for calculating pointer later
-        if (wfreq == null) {
-            wfreq = 0;
-        }
-
-        // create an indicator trace for the gauge chart
-        var traceGauge = {
-            domain: { x: [0, 1], y: [0, 1] },
-            value: wfreq,
-            type: "indicator",
-            mode: "gauge",
-            gauge: {
-                axis: {
-                    range: [0, 9],
-                    tickmode: 'linear',
-                    tickfont: {
-                        size: 15
-                    }
-                },
-                bar: { color: 'rgba(8,29,88,0)' }, // making gauge bar transparent since a pointer is being used instead
-                steps: [
-                    { range: [0, 1], color: 'rgb(255,255,217)' },
-                    { range: [1, 2], color: 'rgb(237,248,217)' },
-                    { range: [2, 3], color: 'rgb(199,233,180)' },
-                    { range: [3, 4], color: 'rgb(127,205,187)' },
-                    { range: [4, 5], color: 'rgb(65,182,196)' },
-                    { range: [5, 6], color: 'rgb(29,145,192)' },
-                    { range: [6, 7], color: 'rgb(34,94,168)' },
-                    { range: [7, 8], color: 'rgb(37,52,148)' },
-                    { range: [8, 9], color: 'rgb(8,29,88)' }
-                ]
             }
-        };
+        ];
 
-        // determine angle for each wfreq segment on the chart
-        var angle = (wfreq / 9) * 180;
+        // Define Plot layout
+        var gauge_layout = { width: 500, height: 400, margin: { t: 0, b: 0 } };
 
-        // calculate end points for triangle pointer path
-        var degrees = 180 - angle,
-            radius = .8;
-        var radians = degrees * Math.PI / 180;
-        var x = radius * Math.cos(radians);
-        var y = radius * Math.sin(radians);
-
-        // Path: to create needle shape (triangle). Initial coordinates of two of the triangle corners plus the third calculated end tip that points to the appropriate segment on the gauge 
-        // M aX aY L bX bY L cX cY Z
-        var mainPath = 'M -.0 -0.025 L .0 0.025 L ',
-            cX = String(x),
-            cY = String(y),
-            pathEnd = ' Z';
-        var path = mainPath + cX + " " + cY + pathEnd;
-
-        gaugeColors = ['rgb(8,29,88)', 'rgb(37,52,148)', 'rgb(34,94,168)', 'rgb(29,145,192)', 'rgb(65,182,196)', 'rgb(127,205,187)', 'rgb(199,233,180)', 'rgb(237,248,217)', 'rgb(255,255,217)', 'white']
-
-        // create a trace to draw the circle where the needle is centered
-        var traceNeedleCenter = {
-            type: 'scatter',
-            showlegend: false,
-            x: [0],
-            y: [0],
-            marker: { size: 35, color: '850000' },
-            name: wfreq,
-            hoverinfo: 'name'
-        };
-
-        // create a data array from the two traces
-        var dataGauge = [traceGauge, traceNeedleCenter];
-
-        // define a layout for the chart
-        var layoutGauge = {
-
-            // draw the needle pointer shape using path defined above
-            shapes: [{
-                type: 'path',
-                path: path,
-                fillcolor: '850000',
-                line: {
-                    color: '850000'
-                }
-            }],
-            font: {
-                family: 'Quicksand'
-            },
-            hoverlabel: {
-                font: {
-                    family: 'Quicksand',
-                    size: 16
-                }
-            },
-            title: {
-                text: `<b>Test Subject ${id}</b><br><b>Belly Button Washing Frequency</b><br><br>Scrubs per Week`,
-                font: {
-                    size: 18,
-                    color: 'rgb(34,94,168)'
-                },
-            },
-            height: 500,
-            width: 500,
-            xaxis: {
-                zeroline: false,
-                showticklabels: false,
-                showgrid: false,
-                range: [-1, 1],
-                fixedrange: true // disable zoom
-            },
-            yaxis: {
-                zeroline: false,
-                showticklabels: false,
-                showgrid: false,
-                range: [-0.5, 1.5],
-                fixedrange: true // disable zoom
-            }
-        };
-
-        // plot the gauge chart
-        Plotly.newPlot('gauge', dataGauge, layoutGauge);
+        // Display plot
+        Plotly.newPlot('gauge', gauge_data, gauge_layout);
+    }))
 
 
-    })); // close .then function
-
-}; // close plotCharts() function
-
-// when there is a change in the dropdown select menu, this function is called with the ID as a parameter
-function optionChanged(id) {
-
-    // reset the data
-    resetData();
-
-    // plot the charts for this id
-    plotCharts(id);
+};
 
 
-} // close optionChanged function
+// FUNCTION #2 of 4
+function populateDemoInfo(patientID) {
 
-// call the init() function for default data
-init();
+    var demographicInfoBox = d3.select("#sample-metadata");
+
+    d3.json("https://raw.githubusercontent.com/ErinBuday/Plot.ly_Challenge/main/data/samples.json").then(data => {
+        var metadata = data.metadata
+        var filteredMetadata = metadata.filter(bacteriaInfo => bacteriaInfo.id == patientID)[0]
+
+        console.log(filteredMetadata)
+        Object.entries(filteredMetadata).forEach(([key, value]) => {
+            demographicInfoBox.append("p").text(`${key}: ${value}`)
+        })
+
+
+    })
+}
+
+// FUNCTION #3 of 4
+function optionChanged(patientID) {
+    console.log(patientID);
+    buildCharts(patientID);
+    populateDemoInfo(patientID);
+}
+
+// FUNCTION #4 of 4
+function initDashboard() {
+    var dropdown = d3.select("#selDataset")
+    d3.json("https://raw.githubusercontent.com/ErinBuday/Plot.ly_Challenge/main/data/samples.json").then(data => {
+        var patientIDs = data.names;
+        patientIDs.forEach(patientID => {
+            dropdown.append("option").text(patientID).property("value", patientID)
+        })
+        buildCharts(patientIDs[0]);
+        populateDemoInfo(patientIDs[0]);
+    });
+};
+
+initDashboard();
