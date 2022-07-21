@@ -1,9 +1,9 @@
 * {
-    font-family: 'Quicksand';
+    font-family: 'quicksand';
 }
 
 .jumbo-bg {
-    background: url('./images/unsplash.png') no-repeat center;
+    background: url("https://images.unsplash.com/photo-1585057638670-98226d968ee5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1010&q=80") no-repeat center;
     background-size: cover;
 }
 
@@ -25,5 +25,5 @@
 }
 
 .header-font {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Times New Roman', serif;
 }
